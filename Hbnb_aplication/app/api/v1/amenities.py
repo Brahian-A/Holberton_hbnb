@@ -1,3 +1,9 @@
+"""
+in this module we define and handler all about the data received
+of the client since the diferents routes of our web app
+"""
+
+
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
 
