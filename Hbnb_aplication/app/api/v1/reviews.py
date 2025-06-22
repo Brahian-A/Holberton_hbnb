@@ -29,7 +29,7 @@ class ReviewList(Resource):
             "rating": new_review.rating,
             "user_id": new_review.user_id,
             "place_id": new_review.place_id
-        }
+        }, 201
 
     @api.response(200, 'List of reviews retrieved successfully')
     def get(self):
@@ -68,7 +68,7 @@ class ReviewResource(Resource):
         if review is None:
             return {'error': 'Review not found'}, 404
         elif 'text' not in update_data or 'rating' not in update_data:
-            return {'error': 'Invalid input data'}, 404
+            return {'error': 'Invalid input data'}, 400
         else:
             facade.update_review(review_id, update_data)
             return {'message': 'Review updated successfully'}, 200
