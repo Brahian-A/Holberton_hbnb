@@ -1,7 +1,3 @@
-"""
-in this module we define and handler all about the data received
-of the client since the diferents routes of our web app
-"""
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
 
@@ -18,6 +14,13 @@ user_model = api.model('PlaceUser', {
     'first_name': fields.String(description='First name of the owner'),
     'last_name': fields.String(description='Last name of the owner'),
     'email': fields.String(description='Email of the owner')
+})
+
+review_model = api.model('PlaceReview', {
+    'id': fields.String(description='Review ID'),
+    'text': fields.String(description='Text of the review'),
+    'rating': fields.Integer(description='Rating of the place (1-5)'),
+    'user_id': fields.String(description='ID of the user')
 })
 
 # Define the place model for input validation and documentation
@@ -82,6 +85,7 @@ class PlaceResource(Resource):
             return {'error': 'Place not found'}, 404
         user = facade.get_user(place.owner_id)
         user = user.to_dict()
+        amenity = [amenity.to_dict() for amenity in place.amenities]
         return {
                 "id": place.id,
                 "title": place.title,
@@ -89,8 +93,20 @@ class PlaceResource(Resource):
                 "price": place.price,
                 "latitude": place.latitud,
                 "longitude": place.longitud,
-                "owner": user
-            }
+                "owner": user,
+                "amenities": amenity
+            }, 200
+
+    @api.response(200, 'Place details retrieved successfully')
+    @api.response(404, 'Place not found')
+    def post(self, place_id):
+        place = facade.get_place(place_id)
+        amenity = api.payload
+        if place:
+            facade.add_amenities(place_id, amenity)
+            return {"mesagge": "amenity add successful"}, 200
+        return {"error": "Place not found"}, 404
+
 
     @api.expect(place_model)
     @api.response(200, 'Place updated successfully')
@@ -113,3 +129,15 @@ class PlaceResource(Resource):
             return {"message": "Place updated successfully"}, 200
         else:
             return {'error': 'internal error'}, 500
+        
+@api.route('/<place_id>/reviews')
+class PlaceReviewList(Resource):
+    @api.response(200, 'List of reviews for the place retrieved successfully')
+    @api.response(404, 'Place not found')
+    def get(self, place_id):
+        """Get all reviews for a specific place"""
+        # Placeholder for logic to return a list of reviews for a place
+        lista = facade.get_reviews_by_place(place_id)
+        if lista:
+            return lista, 200
+        return {'error': 'Place not found'}
