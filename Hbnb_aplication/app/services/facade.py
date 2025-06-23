@@ -2,11 +2,11 @@
 in this module we define the logic about work our facade, the
 connection with the 'database' and the responses to the api
 """
-
 from app.persistence.repository import InMemoryRepository
 from app.models.user import User
 from app.models.place import Place
 from app.models.amenity import Amenity
+from app.models.review import Review
 
 
 class HBnBFacade:
@@ -94,6 +94,12 @@ class HBnBFacade:
         places = self.place_repo.get_all()
         return [place.to_dict() for place in places]
 
+    def add_amenities(self, place_id, amenity_id):
+        place = self.place_repo.get(place_id)
+        amenity = self.amenity_repo.get(amenity_id['id'])
+        return place.add_amenity(amenity)
+
+
     def update_place(self, place_id, place_data):
     # Placeholder for logic to update a place
         place = self.place_repo.get(place_id)
@@ -105,3 +111,52 @@ class HBnBFacade:
     def get_places_ubis(self):
         places = self.place_repo.get_all()
         return [place.to_ubication() for place in places]
+
+
+    """REVIEWS #############################################"""
+
+    def create_review(self, review_data):
+        user_id = review_data.get('user_id')
+        place_id = review_data.get('place_id')
+        user = self.user_repo.get(user_id)
+        if not user:
+            return None
+        place = self.place_repo.get(place_id)
+        if not place:
+            return None
+        review = Review(**review_data)
+        self.review_repo.add(review)
+        place.add_review(review)
+        return review
+
+    def get_review(self, review_id):
+    # Placeholder for logic to retrieve a review by ID
+        return self.review_repo.get(review_id)
+
+    def get_all_reviews(self):
+    # Placeholder for logic to retrieve all reviews
+        reviews = self.review_repo.get_all()
+        return [review.to_dict() for review in reviews]
+
+    def get_reviews_by_place(self, place_id):
+    # Placeholder for logic to retrieve all reviews for a specific place
+        place = self.place_repo.get(place_id)
+        reviews = place.reviews
+        return [review.to_dict() for review in reviews]
+
+    def update_review(self, review_id, review_data):
+    # Placeholder for logic to update a review
+        review = self.review_repo.get(review_id)
+        if review:
+            review.update(review_data)
+            return review.to_dict()
+        return None
+
+    def delete_review(self, review_id):
+    # Placeholder for logic to delete a review
+        review = self.review_repo.get(review_id)
+        if review:
+            self.review_repo.delete(review_id)
+            return True
+        return None
+

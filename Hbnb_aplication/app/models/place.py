@@ -29,11 +29,8 @@ class Place(BaseModel):
         return {
             'id': self.id,
             'title': self.title,
-            'description': self.description,
-            'price': self.price,
             'latitude': self.latitud,
             'longitude': self.longitud,
-            'owner_id': self.owner_id
         }
 
     def to_ubication(self):
