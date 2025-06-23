@@ -116,10 +116,16 @@ class HBnBFacade:
     """REVIEWS #############################################"""
 
     def create_review(self, review_data):
-    # Placeholder for logic to create a review, including validation for user_id, place_id, and rating
+        user_id = review_data.get('user_id')
+        place_id = review_data.get('place_id')
+        user = self.user_repo.get(user_id)
+        if not user:
+            return None
+        place = self.place_repo.get(place_id)
+        if not place:
+            return None
         review = Review(**review_data)
         self.review_repo.add(review)
-        place = self.place_repo.get(review.place_id)
         place.add_review(review)
         return review
 
