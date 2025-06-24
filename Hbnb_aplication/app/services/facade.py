@@ -51,7 +51,10 @@ class HBnBFacade:
         return amenity.to_dict()
 
     def get_amenity(self, amenity_id):
-        return self.amenity_repo.get(amenity_id)
+        amenity = self.amenity_repo.get(amenity_id)
+        if amenity:
+            return amenity.to_dict()
+        return None
 
     def get_all_amenities(self):
         amenities = self.amenity_repo.get_all()
@@ -131,7 +134,7 @@ class HBnBFacade:
         if not place:
             return {'error': 'Place not found'}
 
-        # Crear el nuevo amenity asociado
+        
         amenity = Amenity(name=amenity_data['name'], place_id=place_id)
         self.amenity_repo.add(amenity)
 
