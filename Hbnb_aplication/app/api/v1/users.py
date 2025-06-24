@@ -38,12 +38,7 @@ class UserList(Resource):
             return {'error': 'Email already registered'}, 400
 
         new_user = facade.create_user(user_data)
-        return {
-            'id': new_user.id,
-            'first_name': new_user.first_name,
-            'last_name': new_user.last_name,
-            'email': new_user.email
-        }, 201
+        return new_user, 201
 
     @api.response(200, 'all users')
     def get(self):
@@ -71,3 +66,14 @@ class UserResource(Resource):
         if updated_user:
             return updated_user, 200
         return {'error': 'User not found'}, 404
+
+
+    @api.response(200, 'User deleted successfully')
+    @api.response(404, 'User not found')
+    def delete(self, user_id):
+        try:
+            facade.delete_user(user_id)
+            return {'message': 'User deleted successfully'}, 200
+        except ValueError:
+            return {'error': 'User not found'}, 404
+        

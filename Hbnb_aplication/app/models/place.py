@@ -26,12 +26,14 @@ class Place(BaseModel):
         self.amenities.append(amenity)
 
     def to_dict(self):
-        return {
-            'id': self.id,
+        base = super().to_dict()
+        base.update({
             'title': self.title,
             'latitude': self.latitud,
             'longitude': self.longitud,
-        }
+            'owner_id': self.owner_id
+        })
+        return base
 
     def to_ubication(self):
         return {

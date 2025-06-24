@@ -13,5 +13,17 @@ class Review(BaseModel):
         self.place_id = place_id
         self.user_id = user_id
 
+    def update(self, data):
+        for key in ['text', 'rating', 'place_id', 'user_id']:
+            if key in data:
+                setattr(self, key, data[key])
+    
     def to_dict(self):
-        return {'id': self.id, 'text': self.text, 'rating': self.rating}
+        base = super().to_dict()
+        base.update ({
+            "text": self.text,
+            "rating": self.rating,
+            "user_id": self.user_id,
+            "place_id": self.place_id,
+                    })
+        return base

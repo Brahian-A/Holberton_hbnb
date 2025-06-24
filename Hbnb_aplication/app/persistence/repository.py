@@ -54,3 +54,15 @@ class InMemoryRepository(Repository):
 
     def get_by_attribute(self, attr_name, attr_value):
         return next((obj for obj in self._storage.values() if getattr(obj, attr_name) == attr_value), None)
+
+    def get_by_place_id(self, place_id):
+        return [
+            obj for obj in self._storage.values()
+            if getattr(obj, 'place_id', None) == place_id
+                ]
+    
+    def get_reviews_by_place(self, place_id):
+        return [
+        obj for obj in self._storage.values()
+        if getattr(obj, 'place_id', None) == place_id
+    ]

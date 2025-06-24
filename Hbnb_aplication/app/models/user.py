@@ -18,9 +18,10 @@ class User(BaseModel):
         self.owned_places = []
 
     def to_dict(self):
-        return {
-            'id': self.id,
+        base = super().to_dict()
+        base.update({
             'first_name': self.first_name,
             'last_name': self.last_name,
             'email': self.email
-            }
+        })
+        return base
