@@ -44,7 +44,7 @@ class ReviewResource(Resource):
     def get(self, review_id):
         try:
             review = facade.get_review(review_id)
-            return review.to_dict(), 200
+            return review, 200
         except ValueError:
             return {'error': 'Review not found'}, 404
 

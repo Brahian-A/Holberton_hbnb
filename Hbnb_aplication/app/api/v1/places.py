@@ -102,14 +102,14 @@ class PlaceResource(Resource):
         update_data = api.payload
 
         # Buscar el lugar por ID
-        place = facade.place_repo.get(place_id)  # ← Es importante que sea el objeto, no un dict
+        place = facade.place_repo.get(place_id)
         if place is None:
             return {'error': 'Place not found'}, 404
 
         # No permitir modificar latitud ni longitud
-        if 'latitude' in update_data and update_data['latitude'] != place.latitud:
+        if 'latitude' in update_data and update_data['latitude'] != place.latitude:
             return {'error': "Location (latitude) cannot be modified"}, 400
-        if 'longitude' in update_data and update_data['longitude'] != place.longitud:
+        if 'longitude' in update_data and update_data['longitude'] != place.longitude:
             return {'error': "Location (longitude) cannot be modified"}, 400
 
         # Validar que el nuevo owner_id exista si se quiere cambiar
@@ -124,4 +124,5 @@ class PlaceResource(Resource):
             return updated_place if isinstance(updated_place, dict) else updated_place.to_dict(), 200
 
         return {'error': 'Internal server error'}, 500
+
     

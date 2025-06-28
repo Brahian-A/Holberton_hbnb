@@ -28,8 +28,11 @@ class AmenityList(Resource):
     def post(self):
         amenity_data = api.payload
         existing_amenity = facade.get_amenity_by_name(amenity_data['name'].strip())
-        if existing_amenity:
-            return {'error': 'Amenity already registered'}, 400
+        if existing_amenity: # si el amenity ya existe lo devolvemos 
+            return {
+                'message': 'Amenity already exists',
+                'amenity': existing_amenity.to_dict()
+                    }, 200
 
         new_amenity = facade.create_amenity(amenity_data)
         if 'error' in new_amenity:
