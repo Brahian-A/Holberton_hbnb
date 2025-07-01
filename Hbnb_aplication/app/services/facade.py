@@ -71,15 +71,48 @@ class HBnBFacade:
 #🛜 =================== AMENITIES ===================
     def create_amenity(self, amenity_data):
         place_id = amenity_data.get('place_id')
-        name = amenity_data.get('name', '').strip()
+        name = amenity_data.get('name', '').strip().lower()
+
         if not name:
             return {'error': 'Amenity name is required'}
         if not place_id or not self.place_repo.get(place_id):
             return {'error': 'Invalid or missing place_id'}
 
-        amenity = Amenity(name=name, place_id=place_id)
-        self.amenity_repo.add(amenity)
-        return amenity.to_dict()
+        # Buscar amenity existente
+        existing_amenity = self.amenity_repo.get_by_attribute('name', name)
+
+        if existing_amenity:
+            # Asociar si no está ya asociado
+            place = self.place_repo.get(place_id)
+            if existing_amenity in place.amenities:
+                return {
+                    'message': 'Amenity already exists and is associated with this place',
+                    'amenity': existing_amenity.to_dict(),
+                    'created': False
+                }
+            place.amenities.append(existing_amenity)
+            self.place_repo.update(place.id, {})
+            return {
+                'message': 'Amenity already existed, now associated to place',
+                'amenity': existing_amenity.to_dict(),
+                'created': False
+            }
+
+        # Crear nuevo amenity
+        new_amenity = Amenity(name=name)
+        self.amenity_repo.add(new_amenity)
+
+        # Asociarlo al place
+        place = self.place_repo.get(place_id)
+        place.amenities.append(new_amenity)
+        self.place_repo.update(place.id, {})
+
+        return {
+            'message': 'Amenity created and associated to place',
+            'amenity': new_amenity.to_dict(),
+            'created': True
+        }
+
 
     def get_amenity(self, amenity_id):
         amenity = self.amenity_repo.get(amenity_id)
@@ -256,4 +289,4 @@ class HBnBFacade:
     def delete_review(self, review_id):
         self.get_review(review_id)
         self.review_repo.delete(review_id)
-        return {"message": "Review deleted successfully"}
+        return {"message": "Review deleted successfully"}   

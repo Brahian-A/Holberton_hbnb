@@ -13,8 +13,7 @@ class Amenity(BaseModel):
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    
-    place_id = db.Column(db.String, db.ForeignKey('user.id'), nullable=False)
+
     
     def to_dict(self):
         base = super().to_dict()
