@@ -3,6 +3,7 @@ in this module we init the app package
 """
 from flask import Flask, render_template
 from flask_restx import Api
+from flask_cors import CORS
 from app.extensions import bcrypt, jwt, db
 
 from app.api.v1.users import api as users_ns
@@ -21,7 +22,9 @@ def create_app(config_class):
     bcrypt.init_app(app)
     db.init_app(app)
 
-        # Ruta pagina principal
+    CORS(app, resources={r"/api/*": {"origins": "*"}})
+
+    # Ruta pagina principal
     @app.route('/')
     def index():
         "sirve la pagina principal index.html"

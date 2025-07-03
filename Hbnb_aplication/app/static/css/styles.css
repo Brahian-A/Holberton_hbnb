@@ -1,6 +1,6 @@
 /* 
-  This is a SAMPLE File to get you started. Follow the instructions on the project to complete the tasks. 
-  You'll probably need to override some of theese styles.
+This is a SAMPLE File to get you started. Follow the instructions on the project to complete the tasks. 
+You'll probably need to override some of theese styles.
 */
 
 * {
@@ -25,7 +25,7 @@ body {
     height: 15vh;
     max-height: 80px;
     min-height: 60px;
-    background-color: #3daaf8;;
+    background-color: #3daaf8;
     position: relative;
     align-items: center;
     display: flex;
@@ -45,13 +45,13 @@ body {
     padding: 20px;  
 }
 .login-button{
-    color: #333;
+    color: #fff;
     margin:0;
     padding: 0;
     text-decoration: none;
     width: 55px;
     height: 20px;
-    background-color: #4bf;
+    background-color: #3daaf8;
     text-align: center;
     border-radius: 3px;
     border-bottom: #333 solid 1px;
@@ -79,13 +79,15 @@ body {
 }
 .title-main{
     padding: 10px;
+    font-weight: bold;
+    font-size: 2.5rem;
 }
 #filter{
     padding: 10px;
 
 }
 #places-list{
-    background-color: #f4f4f4;
+    background-color: #fff;
     width: 100vw;
     height: 80%;
     box-sizing: border-box;
@@ -131,7 +133,7 @@ body {
 }
 .details-button{
     background-color: #3daaf8;
-    color: #333;
+    color: #fff;
     width: 100px;
     height: 35px;
     border-radius: 5px;
