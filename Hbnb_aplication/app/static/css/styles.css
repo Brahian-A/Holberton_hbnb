@@ -44,7 +44,7 @@ body {
     text-decoration: none;
     padding: 20px;  
 }
-.login-button{
+.login-button, #logout-link{
     color: #fff;
     margin:0;
     padding: 0;
@@ -57,13 +57,19 @@ body {
     border-bottom: #333 solid 1px;
     border-right: #333 solid 1px;
 }
-.login-button:active{
+.login-button:active, #logout-link:active{
     background-color: #28d;
     color: #fff;
     border-bottom: none;
     border-right: none;
     border-top: #333 solid 1px;
     border-left: #333 solid 1px;
+}
+#logout-link{
+    display: none;
+    border: none;
+    border-bottom: #333 solid 1px;
+    border-right: #333 solid 1px;
 }
 
 .main-index {

@@ -29,7 +29,11 @@ def create_app(config_class):
     def index():
         "sirve la pagina principal index.html"
         return render_template('index.html')
-
+    
+    @app.route('/login')
+    def login():
+        """Sirve la página de inicio de sesión (login.html)."""
+        return render_template('login.html')
     # API RESTX
     api = Api(app, version='1.0', title='HBnB API', description='HBnB Application API', doc='/docs/')
 

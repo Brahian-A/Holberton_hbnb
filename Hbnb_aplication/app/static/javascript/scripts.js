@@ -1,8 +1,40 @@
 /* 
-  This is a SAMPLE FILE to get you started.
-  Please, follow the project instructions to complete the tasks.
+This is a SAMPLE FILE to get you started.
+Please, follow the project instructions to complete the tasks.
 */
+/*##########################################################
+-------------- LOGICA DE AUTENTICACION ---------------------
+############################################################*/
+document.addEventListener('DOMContentLoaded', () => {
+    const accessToken = localStorage.getItem('access_token');
+    const loginLink = document.getElementById('login-link');
+    const logoutButton = document.getElementById('logout-link');
 
+    if (accessToken) {
+        if (loginLink) {
+            loginLink.style.display = 'none'; // ocultamos el enlace de login si el usuario ya está autenticado
+        }
+        if (logoutButton) {
+            logoutButton.style.display = 'block';
+            logoutButton.addEventListener('click', () => {
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('user_id'); // eliminamos el token de acceso y el id del almacenamiento local
+                window.location.reload(); // redirigimos al usuario a la página principal
+            });
+        }
+    } else {
+        if (loginLink) {
+            loginLink.style.display = 'block'; // mostramos el enlace de login si el usuario no está autenticado
+        }
+        if (logoutButton) {
+            logoutButton.style.display = 'none'; // ocultamos el botón de logout si el usuario no está autenticado
+        }
+    }
+});
+
+/*#####################################################
+----- LOGICA DE MOSTRAR PLACES DINAMICAMENTE ----------
+#######################################################*/
 document.addEventListener('DOMContentLoaded', () => {
     const placesListSection = document.getElementById('places-list');
 
@@ -70,4 +102,4 @@ document.addEventListener('DOMContentLoaded', () => {
         // Aquí iría la lógica para filtrar los places ya cargados o hacer una nueva llamada a la API
         // renderPlacesWithFilter(filterValue); // Por ejemplo, llamar a una nueva función de renderizado con filtro
     });
-  });
+});
