@@ -3,11 +3,14 @@
 ################################################################*/
 
 document.addEventListener("DOMContentLoaded", function() {
+    // obtenemos los componentes
     const activadorCheckbox = document.getElementById("activador");
     const loginForm = document.getElementById("login-form");
     const registerForm = document.getElementById("register-form");
 
     function changeVisibility(){
+        // agrega un bloque de css a las forms dependiendo del checkbox
+        // esto genera el intercambio de formularios
         if (activadorCheckbox.checked){
             registerForm.classList.add('form-active');
             loginForm.classList.remove('form-active');
@@ -27,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function() {
 ######################################################### */
 async function loginUser(email, password) {
     try {
-        const response = await fetch('http://127.0.0.1:5000/api/v1/auth/login', { // ⭐ ¡Esta es la URL correcta! ⭐
+        const response = await fetch('http://127.0.0.1:5000/api/v1/auth/login', {
                 method: 'POST', // ¡Siempre POST para login!
                 headers: {
                     'Content-Type': 'application/json' // Indicamos que enviamos JSON
@@ -41,22 +44,21 @@ async function loginUser(email, password) {
 
             if (response.ok) { // Si la respuesta HTTP es 2xx (ej. 200 OK)
                 console.log('Login exitoso:', data);
-                // ⭐ Guarda el token de acceso y el user_id ⭐
+                // Guarda el token de acceso y el user_id
                 localStorage.setItem('access_token', data.access_token);
-                localStorage.setItem('user_id', data.user_id); // Guardamos el user_id también
+                localStorage.setItem('user_id', data.user_id);
 
                 alert('¡Login exitoso! Redirigiendo...');
-                
-                // Redirige al usuario a la página principal o dashboard
-                // Cambia '/dashboard.html' por la ruta real de tu aplicación
-                window.location.href = '/'; // Redirige a la página principal después del login exitoso
+
+                // Redirige a la página principal después del login exitoso
+                window.location.href = '/';
             } else {
-                // Si la respuesta HTTP es un error (ej. 401 Unauthorized, 400 Bad Request)
+                // Si la respuesta HTTP es un error 
                 console.error('Error en el login:', data.error);
                 alert(data.error || 'Error desconocido en el login.');
             }
         } catch (error) {
-            // Esto captura errores de red (servidor no disponible, CORS bloqueado, etc.)
+            // Esto captura errores de red
             console.error('Error de red o del servidor:', error);
             alert('No se pudo conectar con el servidor. Verifica tu conexión o la URL de la API.');
         }

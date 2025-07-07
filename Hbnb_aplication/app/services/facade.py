@@ -142,9 +142,11 @@ class HBnBFacade:
         if not place:
             return None
 
+        user = place.owner
         amenities = place.amenities
 
         place_dict = place.to_dict()
+        place_dict['owner_id'] = {'id': user.id, 'first_name': user.first_name, 'last_name': user.last_name}
         place_dict['amenities'] = [
             {'id': amenity.id, 'name': amenity.name} for amenity in amenities
         ] if amenities else []

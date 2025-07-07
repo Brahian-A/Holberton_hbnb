@@ -2,49 +2,77 @@
 This is a SAMPLE FILE to get you started.
 Please, follow the project instructions to complete the tasks.
 */
-/*##########################################################
--------------- LOGICA DE AUTENTICACION ---------------------
-############################################################*/
 document.addEventListener('DOMContentLoaded', () => {
     const accessToken = localStorage.getItem('access_token');
     const loginLink = document.getElementById('login-link');
     const logoutButton = document.getElementById('logout-link');
+    const placesListSection = document.getElementById('places-list');
+    const url = 'http://localhost:5000/api/v1/places/';
+    let listOfPlaces = [];
 
+    const requestOptions = {  // creamos un header general
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    };
     if (accessToken) {
-        if (loginLink) {
-            loginLink.style.display = 'none'; // ocultamos el enlace de login si el usuario ya está autenticado
-        }
-        if (logoutButton) {
-            logoutButton.style.display = 'block';
-            logoutButton.addEventListener('click', () => {
-                localStorage.removeItem('access_token');
-                localStorage.removeItem('user_id'); // eliminamos el token de acceso y el id del almacenamiento local
-                window.location.reload(); // redirigimos al usuario a la página principal
-            });
-        }
-    } else {
-        if (loginLink) {
-            loginLink.style.display = 'block'; // mostramos el enlace de login si el usuario no está autenticado
-        }
-        if (logoutButton) {
-            logoutButton.style.display = 'none'; // ocultamos el botón de logout si el usuario no está autenticado
+        requestOptions.headers['Authorization'] = `Bearer ${accessToken}`; // Añadimos el token de acceso a las cabeceras
+    }
+
+    /*##########################################################
+    -------------- LOGICA DE AUTENTICACION ---------------------
+    ############################################################*/
+
+    // #-#-# función para verificar la autenticación #-#-#
+
+    async function checkAuthentication() { 
+        if (accessToken) {
+            if (loginLink) {
+                loginLink.style.display = 'none'; // ocultamos el enlace de login si el usuario ya está autenticado
+            }
+            if (logoutButton) {
+                logoutButton.style.display = 'block';
+                logoutButton.onclick = () => { // detectamos el cierre de sesión
+                    localStorage.removeItem('access_token');
+                    localStorage.removeItem('user_id');      // eliminamos el token de acceso y el id del almacenamiento local
+                    window.location.reload();               // redirigimos al usuario a la página principal
+                };
+            }
+            // Si el usuario está autenticado, renderizamos los lugares
+            renderPlaces();
+        } else {
+            if (loginLink) {
+                loginLink.style.display = 'block'; // mostramos el enlace de login si el usuario no está autenticado
+            }
+            if (logoutButton) {
+                logoutButton.style.display = 'none'; // ocultamos el botón de logout si el usuario no está autenticado
+            }
+            // Si no hay token de acceso, mostramos un mensaje de iniciar sesion
+            placesListSection.innerHTML = '<p class="error-message">Por favor, inicie sesión.</p>';
         }
     }
-});
 
-/*#####################################################
------ LOGICA DE MOSTRAR PLACES DINAMICAMENTE ----------
-#######################################################*/
-document.addEventListener('DOMContentLoaded', () => {
-    const placesListSection = document.getElementById('places-list');
+    /*#####################################################
+    ----- LOGICA DE MOSTRAR PLACES DINAMICAMENTE ----------
+    #######################################################*/
 
-    // Función para obtener los datos de los lugares desde la API
+    // #-#-# Función para obtener los datos desde la API #-#-#
+    
     async function fetchPlaces() {
         try {
-            // Asegúrate de que esta URL sea la correcta para tu endpoint de la API
-            const response = await fetch('http://localhost:5000/api/v1/places/'); // Cambiá 5000 por el puerto de tu API
+            // URL para conectar con el endpoint de la API
+            const response = await fetch(url, requestOptions);
             
             if (!response.ok) {
+                // manejamos la no autorizacion del cliente
+                if (response.status === 401) {
+                    console.error('Unauthorized access - invalid token');
+                    localStorage.removeItem('access_token'); // eliminamos el token de acceso
+                    localStorage.removeItem('user_id');     // eliminamos el user_id
+                    checkAuthentication();   // volvemos a verificar la autenticación
+                    return [];
+                }
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
@@ -52,19 +80,30 @@ document.addEventListener('DOMContentLoaded', () => {
             return data; // Devuelve los datos
         } catch (error) {
             console.error('Error fetching places:', error);
-            // Mostrar un mensaje de error en la UI si la API falla
-            placesListSection.innerHTML = '<p class="error-message">No se pudieron cargar los lugares. Por favor, inténtelo de nuevo más tarde.</p>';
+            // Mostramos un mensaje de error en la UI si la API falla
+            placesListSection.innerHTML = '<p class="error-message">No se pudieron cargar los lugares. Por favor, inténtelo más tarde.</p>';
             return []; // Retorna un array vacío para evitar errores posteriores
         }
     }
 
-    // Función para renderizar los lugares en el HTML
+    // #-#-# Función que obtiene todos los lugares y llama a filteredPlaces() #-#-#
+
     async function renderPlaces() {
         const places = await fetchPlaces();
 
-        // Limpiar cualquier contenido existente (tus articles de prueba)
+        listOfPlaces = places;
+        filteredPlaces(listOfPlaces) // Guardamos los datos obtenidos en la variable listOfPlaces
+    }
+
+    // #-#-# Función para renderizar los lugares filtrados #-#-#
+
+    async function filteredPlaces(listOfPlaces) {
+        
+        const places = listOfPlaces; // Usamos la variable global listOfPlaces
+        // Limpiar cualquier contenido existente
         placesListSection.innerHTML = '';
 
+        // si la lista es igual a 0
         if (places.length === 0) {
             placesListSection.innerHTML = '<p class="no-places-found">No hay lugares disponibles en este momento.</p>';
             return;
@@ -72,34 +111,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
         places.forEach(place => {
             const article = document.createElement('article');
-            article.classList.add('place-card'); // Añade la clase CSS
+            article.classList.add('place-card'); // indicamos que articulo crear
 
             // Construye el HTML interno del article usando los datos del 'place'
-            // Asegurate de que los nombres de las propiedades (place.name, place.price_by_night, etc.)
-            // coincidan con los que devuelve tu API.
             article.innerHTML = `
                 <h2 class="place-card-title">${place.title}</h2>
                 <h5 class="place-card-price">price per night: $${place.price}</h5>
-                <a class="details-button" href="/places/${place.id}">View Details</a>
+                <a class="details-button" href="/places?id=${place.id}">View Details</a>
                 <div class="place-details">
                 </div>
             `;
-            // Asegúrate de que los campos como 'max_guests', 'number_rooms', 'number_bathrooms', 'description'
-            // existan en los objetos 'place' que devuelve tu API.
-
             placesListSection.appendChild(article);
         });
     }
 
-    // Llama a la función principal para renderizar los lugares cuando la página esté lista
-    renderPlaces();
+    // llamada principal para verificar la autenticación y renderizar los lugares 
+    checkAuthentication();
 
-    // Puedes añadir aquí la lógica para el filtro de precio si quieres implementarlo más adelante
+    // #-#-# lógica para el filtrado de precios #-#-#-
     const priceFilter = document.getElementById('price-filter');
     priceFilter.addEventListener('change', (event) => {
         const filterValue = event.target.value;
+        let placesToShow = [];
         console.log('Filtro de precio seleccionado:', filterValue);
-        // Aquí iría la lógica para filtrar los places ya cargados o hacer una nueva llamada a la API
-        // renderPlacesWithFilter(filterValue); // Por ejemplo, llamar a una nueva función de renderizado con filtro
+        if (filterValue === 'all') { 
+            placesToShow = listOfPlaces; // Si se selecciona "all", mostramos todos los lugares
+            filteredPlaces(placesToShow);
+        } else {
+            if (filterValue === '10') {
+                placesToShow = listOfPlaces.filter(place => place.price <= 10); // Filtramos precios menores o iguales a 10
+            }
+            else if (filterValue === '50') {
+                placesToShow = listOfPlaces.filter(place => place.price <= 50); // Filtramos precios menores o iguales a 50
+            }
+            else if (filterValue === '100') {
+                placesToShow = listOfPlaces.filter(place => place.price <= 100); // Filtramos precios menores o iguales a 100
+            }
+            filteredPlaces(placesToShow); // Llamamos a la función para renderizar los places
+        }
     });
 });
