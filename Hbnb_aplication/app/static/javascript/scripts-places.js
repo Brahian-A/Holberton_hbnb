@@ -17,6 +17,7 @@ function getStarRatingHtml(rating, maxStars = 5) {
     return starsHtml;
 }
 
+// ------------ DOMContentLoaded ---------------
 document.addEventListener('DOMContentLoaded', () => {
     const accessToken = localStorage.getItem('access_token');
     const loginLink = document.getElementById('login-link');
@@ -26,7 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const addReviewSection = document.getElementById('add-review');
     const placeId = new URLSearchParams(window.location.search).get('id'); // obtenemos el id del lugar desde la URL
     const url = 'http://localhost:5000/api/v1/places/';
-    let listOfPlaces = [];
 
     const requestOptions = { // creamos un header general
         method: 'GET',
@@ -154,7 +154,81 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     }
+    async function addReviews() {
+        const formReview = document.getElementById('review-form') //formulario
+        const reviewText = document.getElementById('review-text')  //texto
+        const reviewRating = document.getElementById('stars_rating') //rating
+
+        if (!formReview){
+            console.error('Error: el elemenco con id "review-form" no fue encontrado');
+            return
+        }
+        function autoResizeReviewTextArea() {
+            if (reviewText) { // Asegúrate de que reviewText existe
+                reviewText.style.height = '25px';
+                reviewText.style.height = reviewText.scrollHeight + 'px';
+            }
+        }
+
+        // Asignar el event listener y llamar la primera vez
+        if (reviewText) { // Asegúrate de que reviewText existe antes de añadir listeners
+            reviewText.addEventListener('input', autoResizeReviewTextArea);
+            autoResizeReviewTextArea(); // Para ajustar si ya hay contenido al cargar
+        }
+        formReview.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            console.log('submit event prevented!')
+
+            const textReview = reviewText.value;
+            const ratingReview = parseInt(reviewRating.value, 10);
+            if (!textReview.trim()) {
+                alert('Por favor, escriba un comentario');
+                return;
+            }
+            if (isNaN(ratingReview) || ratingReview < 1 || ratingReview > 5) {
+                alert('Por favor seleccione una calificacion');
+                return;
+            }
+            try {
+                const postRequestOption = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'authorization': `Bearer ${localStorage.getItem('access_token')}`
+                },
+                body: JSON.stringify({ 
+                    'user_id': localStorage.getItem('user_id'),
+                    'place_id': placeId,
+                    'text': textReview,
+                    'rating': ratingReview
+                    })
+                };
+                const response = await fetch('http://127.0.0.1:5000/api/v1/reviews/', postRequestOption);
+                if (!response.ok) {
+                    // manejamos la no autorizacion del cliente
+                    if (response.status === 401) {
+                        console.error('Unauthorized access - invalid token');
+                        localStorage.removeItem('access_token'); // eliminamos el token de acceso
+                        localStorage.removeItem('user_id'); // eliminamos el id del usuario
+                        checkAuthentication(); // volvemos a verificar la autenticación
+                        return null;
+                    }
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                if (response.ok){
+                    alert('review create successful');
+                    window.location.reload();
+                } else {
+                    alert(data.error || 'problemas tecnicos')
+                }
+            } catch (error) {
+                alert('No se pudo conectar con el servidor. Verifica tu conexión o la URL de la API.');
+            }
+        });
+    }
     // llamada principal para que todo ande
     checkAuthentication();
+    addReviews();
 
-})
+});

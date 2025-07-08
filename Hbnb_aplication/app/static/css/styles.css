@@ -11,7 +11,7 @@ You'll probably need to override some of theese styles.
 }
 
 body {
-    background-color: #f4f4f4;
+    background-color: #00f;
     width: 100vw;
     height: 100vh;
     color: #333;
@@ -25,7 +25,7 @@ body {
     height: 15vh;
     max-height: 80px;
     min-height: 60px;
-    background-color: #3daaf8;
+    background-color: #00fa;
     position: relative;
     align-items: center;
     display: flex;
@@ -47,33 +47,32 @@ body {
 .login-button, #logout-link{
     color: #fff;
     margin:0;
-    padding: 0;
+    padding: 10px 20px;
     text-decoration: none;
-    width: 55px;
-    height: 20px;
-    background-color: #3daaf8;
+    background-color: #00fa;
     text-align: center;
-    border-radius: 3px;
-    border-bottom: #333 solid 1px;
-    border-right: #333 solid 1px;
+    border: #fff solid 1px;
+    border-radius: 5px;
+    font-weight: bold;
 }
 .login-button:active, #logout-link:active{
-    background-color: #28d;
+    background-color: #00ca;
     color: #fff;
     border-bottom: none;
     border-right: none;
-    border-top: #333 solid 1px;
-    border-left: #333 solid 1px;
+    border: #333 solid 2px;
+    font-weight: bold;
 }
 #logout-link{
     display: none;
     border: none;
-    border-bottom: #333 solid 1px;
-    border-right: #333 solid 1px;
+    border: #fff solid 1px;
+    border-radius: 5px;
+    font-weight: bold;
 }
 
 .main-index {
-    background-color: #fff;
+    background-color: #fafafa;
     width: 100vw;
     height: 90vh;
     position: relative;
@@ -89,11 +88,11 @@ body {
     font-size: 2.5rem;
 }
 #filter{
-    padding: 10px;
+    padding: 20px;
 
 }
 #places-list{
-    background-color: #fff;
+    background-color: #fafafa;
     width: 100vw;
     height: 80%;
     box-sizing: border-box;
@@ -110,7 +109,7 @@ body {
     min-width: 200px;
     min-height: 200px;
     max-width: 500px;
-    background-color: #fff;
+    background-color: #fafafa;
     margin: 20px;
     padding: 10px;
     border: 1px solid #333;
@@ -119,12 +118,12 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    box-shadow: #3af8 0 0 15px 4px;
+    box-shadow: #00f 0 0 10px 3px;
     box-sizing: border-box;
 }
 .place-card:hover{
-    box-shadow: #3aff 0 0 15px 4px;
-    background-color: #def5;
+    box-shadow: #00f 0 0 15px 5px;
+    background-color: #eef;
 }
 .place-card-title{
     padding: 10px;
@@ -138,7 +137,7 @@ body {
     font-size:medium;
 }
 .details-button{
-    background-color: #3daaf8;
+    background-color: #00f;
     color: #fff;
     width: 100px;
     height: 35px;
@@ -147,11 +146,10 @@ body {
     align-items: center;
     justify-content: center;
     text-decoration: none;
-    border: #fff solid 1px;
-    box-shadow: 0px 0px 15px 3px #9dfa;
+    box-shadow: 0px 0px 10px 3px #00f;
 }
 .details-button:hover{
-    box-shadow: 0px 0px 15px 1px #48ff;
+    box-shadow: 0px 0px 15px 3px #00f;
 }
 .details-button:active{
     background-color: #16a;
@@ -159,13 +157,13 @@ body {
 
 }
 footer{
-    background-color: #3daaf8;
+    background-color: #00fa;
     width: 100vw;
-    height: 15vh;
-    max-height: 80px;
-    min-height: 60px;
+    height: 100%;
+    max-height: 60px;
+    min-height: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
-
+    color: #fff
 }

@@ -11,14 +11,14 @@ body{
     height: 100vh;
     width: 100%;
     box-sizing: border-box;
-    background-color: #f00;
+    background-color: #00f;
 }
 
 /*##############################
 ---------  HEADER  -------------
 ################################*/
 .header {
-    background-color: #f00;
+    background-color: #00fa;
     padding: 10px;
     text-align: center;
     display: flex;
@@ -38,15 +38,16 @@ body{
 #logout-link, .login-button {
     text-decoration: none;
     color: white;
-    background-color: #f00;
+    background-color: #00fa;
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     border: 1px solid #fff;
+    font-weight: bold;
 }
 .login-button:active, #logout-link:active{
-    background-color: #c00;
+    background-color: #00ca;
     border: 1px solid #000;
 }
 /*##############################
@@ -56,40 +57,47 @@ main{
     position: relative;
     height: 90%;
     width: 100%;
-    background-color: blueviolet;
+    background-color: #fafafa;
     box-sizing: border-box;
 }
+
+/*------- ZONA DETALLES PLACES ----------*/
 #place-details {
     position: absolute;
     top: 0px;
-    background-color: #0f0;
     width: 100%;
-    height: 40vh;
+    height: 29vh;
     display: flex;
     flex-direction: column-reverse;
     justify-self: center;
     align-items: center;
     box-sizing: border-box;
 }
+#place-details h2 {
+    font-size: 3.5rem;
+    font-weight: 1000;
+}
+
 .details-show {
-    background-color: #fff;
+    background-color: #eef;
     margin: auto;
     width: 80%;
-    height: 80%;
+    height: 65%;
     border-radius: 10px;
-    box-shadow: #000 0 0 10px 3px;
+    box-shadow: #00f 0 0 10px 3px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 30px;
+    gap: 10px;
 }
+
+/*------------- ZONA REVIEW ------------*/
 #reviews{
     position: absolute;
-    top: 40vh;
-    background-color: #a4a0;
+    top: 29vh;
     width: 100%;
-    height: 50vh;
+    height: 53vh;
     overflow: hidden;
     display: flex;
     flex-direction: row;
@@ -97,23 +105,22 @@ main{
     align-items: center;
 }
 .ventana-container {
-    background-color: aqua;
-    width: 88%;
-    height: 65%;
+    width: 85%;
+    height: 58%;
     position: absolute;
-    right: 0;
-    top: 0;
+    right: 3%;
+    top: 17px;
     box-sizing: border-box;
     z-index: 0;
     overflow-y: scroll;
+    border-radius: 10px;
+    box-shadow: #00f 0 0 10px 3px;
 }
 .container{
     position: absolute;
     width: 100%;
-    height: calc();
-    padding-top: 0px;
+    padding-top: 20px;
     padding-bottom: 20px;
-    background-color: #f3a;
     right: 0;
     display: flex;
     box-sizing: border-box;
@@ -126,38 +133,23 @@ main{
 .title-reviews {
     position: absolute;
     left: 0;
-    top: 0;
+    top: 8px;
 }
 .reviews-list {
-    background-color: #fff;
+    background-color: #eef;
     margin:10px auto 0px auto;
     width: 90%;
     height: 50%;
     min-height: 100px;
     max-height: 130px;
     border-radius: 10px;
-    box-shadow: #000 0 0 10px 3px;
+    box-shadow: #00f 0 0 10px 3px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     gap: 15px
 }
-#add-review {
-    position: absolute;
-    background-color: #0f0;
-    bottom: 0;
-    width: 100%;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
 .star {
     font-size: 1.2em;
     margin-right: 2px;
@@ -172,6 +164,68 @@ main{
     color: #000;
 }
 
+/*--------- ZONA ADD REVIEWS -----------*/
+#add-review {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    color: #000;
+    padding: 0px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+form {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+}
+.text-add-review {
+    font-weight: 800;
+    font-size: 1rem;
+    position:relative;
+    left: -45%;
+    padding: 5px;
+}
+.input-add-review {
+    width: 90%;
+    height: 25px;
+    text-align: start;
+    border: none;
+    box-shadow: #00f 0 0 10px 3px;
+    border-radius: 5px;
+    padding-left: 5px;
+}
+textarea {
+    padding: 5px 5px;
+    resize: none;
+    overflow: hidden;
+    transition: height 0.2s ease-in-out;
+    max-height: 60px;
+
+}
+select option:active {
+    font-weight: 1000;
+    background-color: #000;
+    font-size: medium;
+}
+section button {
+    width: 93%;
+    height: 25px;
+    margin-top: 15px;
+    font-size: 1rem;
+    font-weight: bolder;
+    background-color: #00f;
+    color: #fff;
+    border-radius: 5px;
+}
+
 /*##############################
 ---------- FOOTER --------------
 ################################*/
@@ -179,9 +233,9 @@ footer{
     position: relative;
     height: 10%;
     width: 100%;
-    min-height: 40px;
-    max-height: 80px;
-    background-color: #f00;
+    min-height: 30px;
+    max-height: 60px;
+    background-color: #00fa;
     text-align: center;
     display: flex;
     justify-content: center;

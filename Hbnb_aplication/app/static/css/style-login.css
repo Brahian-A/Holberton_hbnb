@@ -6,7 +6,7 @@
 }
 
 body {
-    background-color: #f4f4f4;
+    background-color: #00f;
     width: 100vw;
     height: 100vh;
     color: #333;
@@ -20,7 +20,7 @@ body {
     height: 15vh;
     max-height: 80px;
     min-height: 60px;
-    background-color: #3daaf8;
+    background-color: #00fa;
     position: relative;
     align-items: center;
     display: flex;
@@ -42,23 +42,20 @@ body {
 .login-button{
     color: #fff;
     margin:0;
-    padding: 0;
+    padding: 10px 20px;
     text-decoration: none;
-    width: 55px;
-    height: 20px;
-    background-color: #3daaf8;
+    background-color: #00fa;
     text-align: center;
-    border-radius: 3px;
-    border-bottom: #333 solid 1px;
-    border-right: #333 solid 1px;
+    border-radius: 5px;
+    border: #fff solid 2px;
+    font-weight: bold;
 }
 .login-button:active{
-    background-color: #28d;
+    background-color: #00ca;
     color: #fff;
     border-bottom: none;
     border-right: none;
-    border-top: #333 solid 1px;
-    border-left: #333 solid 1px;
+    border: #333 solid 1px;
 }
 .main-login {
     background-color: #fff;
@@ -229,13 +226,20 @@ label{
 ---------------------- FOOTER ------------------------
 #####################################################*/
 footer{
-    background-color: #3daaf8;
-    width: 100vw;
-    height: 15vh;
-    max-height: 80px;
-    min-height: 60px;
+    position: relative;
+    height: 10%;
+    width: 100%;
+    min-height: 30px;
+    max-height: 60px;
+    background-color: #00fa;
+    text-align: center;
     display: flex;
     justify-content: center;
     align-items: center;
-
+    padding: 10px;
+    color: #fafafa;
+}
+.text-footer {
+    margin: 0;
+    padding: 0;
 }

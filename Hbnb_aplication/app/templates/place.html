@@ -54,9 +54,16 @@
         <section id="add-review">
             <h2>Add a Review</h2>
             <form id="review-form">
-                <label for="review-text">Review:</label>
-                <textarea id="review-text" name="review-text" required></textarea>
-                
+                <label class="text-add-review" for="review-text">Your Review:</label>
+                <textarea rows="3" class="input-add-review" id="review-text" name="review-text" required></textarea>
+                <label class="text-add-review" for="stars_rating">Rating:</label>
+                <select class="input-add-review" name="stars_rating" id="stars_rating">
+                    <option value="1" class="cant_stars"><b>1 star</b></option>
+                    <option value="2" class="cant_stars"><b>2 stars</b></option>
+                    <option value="3" class="cant_stars"><b>3 stars</b></option>
+                    <option value="4" class="cant_stars"><b>4 stars</b></option>
+                    <option value="5" class="cant_stars"><b>5 stars</b></option>
+                </select>
                 <button type="submit">Submit</button>
             </form>
         </section>
