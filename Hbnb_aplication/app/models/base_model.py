@@ -7,20 +7,40 @@ update all entities
 """
 import uuid
 from datetime import datetime
+from app.extensions import db 
 
-class BaseModel:
-    def __init__(self):
-        self.id = str(uuid.uuid4())
-        self.created_at = datetime.now()
-        self.updated_at = datetime.now()
+import uuid
+from datetime import datetime
+from app.extensions import db
+
+class BaseModel(db.Model):
+    __abstract__ = True 
+
+    id = db.Column(db.String, primary_key=True, default=lambda: str(uuid.uuid4()), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+
 
     def save(self):
-        """Update the updated_at timestamp whenever the object is modified"""
-        self.updated_at = datetime.now()
+        """Guarda el modelo y actualiza el timestamp"""
+        self.updated_at = datetime.utcnow()
+        db.session.add(self)
+        db.session.commit()
 
     def update(self, data):
-        """Update the attributes of the object based on the provided dictionary"""
+        """Actualiza los atributos desde un diccionario"""
+        protected_fields = {'id', 'created_at', 'updated_at'}
         for key, value in data.items():
-            if hasattr(self, key):
+            if hasattr(self, key) and key not in protected_fields:
                 setattr(self, key, value)
-        self.save()  # Update the updated_at timestamp
+        self.save()
+
+    def to_dict(self):
+        def safe_isoformat(dt):
+            return dt.isoformat() if dt else None
+    
+        return {
+            'id': self.id,
+            'created_at': safe_isoformat(self.created_at),
+            'updated_at': safe_isoformat(self.updated_at),
+        }

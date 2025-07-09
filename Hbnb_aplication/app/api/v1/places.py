@@ -2,6 +2,8 @@
 in this module we define and handler all about the data received
 of the client since the diferents routes of our web app
 """
+
+
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
 
@@ -20,9 +22,16 @@ user_model = api.model('PlaceUser', {
     'email': fields.String(description='Email of the owner')
 })
 
+review_model = api.model('PlaceReview', {
+    'id': fields.String(description='Review ID'),
+    'text': fields.String(description='Text of the review'),
+    'rating': fields.Integer(description='Rating of the place (1-5)'),
+    'user_id': fields.String(description='ID of the user')
+})
+
 # Define the place model for input validation and documentation
 place_model = api.model('Place', {
-    'title': fields.String(required=True, description='Title of the place'),
+    'title': fields.String(required=True, min_length=1, description='Title of the place'),
     'description': fields.String(description='Description of the place'),
     'price': fields.Float(required=True, description='Price per night'),
     'latitude': fields.Float(required=True, description='Latitude of the place'),
@@ -39,34 +48,37 @@ class PlaceList(Resource):
     @api.response(400, 'Invalid input data')
     def post(self):
         """Register a new place"""
-        # Placeholder for the logic to register a new place
         place_data = api.payload
 
-        ubications = facade.get_places_ubis()
+        # Validar campos esenciales
+        required_fields = ['title', 'description', 'price', 'latitude', 'longitude', 'owner_id']
+        for field in required_fields:
+            if field not in place_data:
+                return {'error': f"Missing required field: {field}"}, 400
+
+        # Validar que el owner_id exista
+        owner = facade.get_user(place_data['owner_id'])
+        if not owner:
+            return {'error': 'Owner_id does not exist'}, 400
+        
+        # Verificar si la ubicación ya está registrada
+        existing_coords = facade.get_places_ubis()
         ubication = {
             'latitude': place_data['latitude'],
             'longitude': place_data['longitude']
         }
-        if ubication in ubications:
-            return {'error': 'Ubication already registred'}, 400
-        n_plc = facade.create_place(place_data)
-        if isinstance(n_plc, dict):
-            return n_plc, 400
-        else:
-            return {
-                "id": n_plc.id,
-                "title": n_plc.title,
-                "description": n_plc.description,
-                "price": n_plc.price,
-                "latitude": n_plc.latitud,
-                "longitude": n_plc.longitud,
-                "owner_id": n_plc.owner_id
-            }, 201
+        if ubication in existing_coords:
+            return {'error': 'Ubication already registered'}, 400
+
+        new_place = facade.create_place(place_data)
+
+        if 'error' in new_place:
+            return new_place, 400
+        return new_place, 201
 
     @api.response(200, 'List of places retrieved successfully')
     def get(self):
         """Retrieve a list of all places"""
-        # Placeholder for logic to return a list of all places
         places = facade.get_all_places()
         return places, 200
 
@@ -75,41 +87,42 @@ class PlaceResource(Resource):
     @api.response(200, 'Place details retrieved successfully')
     @api.response(404, 'Place not found')
     def get(self, place_id):
-        """Get place details by ID"""
-        # Placeholder for the logic to retrieve a place by ID, including associated owner and amenities
         place = facade.get_place(place_id)
         if not place:
             return {'error': 'Place not found'}, 404
-        user = facade.get_user(place.owner_id)
-        user = user.to_dict()
-        return {
-                "id": place.id,
-                "title": place.title,
-                "description": place.description,
-                "price": place.price,
-                "latitude": place.latitud,
-                "longitude": place.longitud,
-                "owner": user
-            }
+        return place, 200
 
     @api.expect(place_model)
     @api.response(200, 'Place updated successfully')
     @api.response(404, 'Place not found')
     @api.response(400, 'Invalid input data')
-    @api.response(500, 'Internal error')
+    @api.response(500, 'Internal server error')
     def put(self, place_id):
         """Update a place's information"""
-        # Placeholder for the logic to update a place by ID
         update_data = api.payload
-        place = facade.get_place(place_id)
+
+        # Buscar el lugar por ID
+        place = facade.place_repo.get(place_id)
         if place is None:
             return {'error': 'Place not found'}, 404
-        if 'latitude' in update_data and update_data['latitude'] != place.latitud:
-            return {'error': "the ubication can't are modify"}, 400
-        if 'longitude' in update_data and update_data['longitude'] != place.longitud:
-            return {'error': "the ubication can't are modify"}, 400
-        update_place = facade.update_place(place_id, update_data)
-        if update_place:
-            return {"message": "Place updated successfully"}, 200
-        else:
-            return {'error': 'internal error'}, 500
+
+        # No permitir modificar latitud ni longitud
+        if 'latitude' in update_data and update_data['latitude'] != place.latitude:
+            return {'error': "Location (latitude) cannot be modified"}, 400
+        if 'longitude' in update_data and update_data['longitude'] != place.longitude:
+            return {'error': "Location (longitude) cannot be modified"}, 400
+
+        # Validar que el nuevo owner_id exista si se quiere cambiar
+        if 'owner_id' in update_data and update_data['owner_id'] != place.owner_id:
+            if not facade.get_user(update_data['owner_id']):
+                return {'error': "New owner_id does not exist"}, 400
+
+        # Hacer la actualización
+        updated_place = facade.update_place(place_id, update_data)
+
+        if updated_place:
+            return updated_place if isinstance(updated_place, dict) else updated_place.to_dict(), 200
+
+        return {'error': 'Internal server error'}, 500
+
+    

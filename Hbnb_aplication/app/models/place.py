@@ -1,43 +1,54 @@
 #!/usr/bin/python3
 """
-in this module we define the class Place(),
-the template of the future places in our app.
+Define the class Place, with SQLAlchemy support and relationships.
 """
 from app.models.base_model import BaseModel
+from app.extensions import db
+import uuid
+from datetime import datetime
+
+# Tabla intermedia para relación muchos-a-muchos con amenities
+place_amenity = db.Table('place_amenity',
+    db.Column('place_id', db.String, db.ForeignKey('place.id'), primary_key=True),
+    db.Column('amenity_id', db.String, db.ForeignKey('amenity.id'), primary_key=True)
+)
 
 class Place(BaseModel):
-    def __init__(self, title, description, price, latitude, longitude, owner_id):
-        super().__init__()
-        self.title = title
-        self.description = description
-        self.price = price
-        self.latitud = latitude
-        self.longitud = longitude
-        self.owner_id = owner_id
-        self.reviews = []
-        self.amenities = []
+    id = db.Column(db.String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    title = db.Column(db.String(100), nullable=False)
+    latitude = db.Column(db.Float, nullable=False)
+    longitude = db.Column(db.Float, nullable=False)
+    owner_id = db.Column(db.String, db.ForeignKey('user.id'), nullable=False)
+    description = db.Column(db.String(500))
+    price = db.Column(db.String(50))
 
-    def add_review(self, review):
-        """Add a review to the place."""
-        self.reviews.append(review)
+    #relaciones
+    owner = db.relationship("User", backref="places")
+    reviews = db.relationship("Review", backref="place", cascade="all, delete-orphan")
+    amenities = db.relationship("Amenity", secondary=place_amenity, backref="places")
+    
 
-    def add_amenity(self, amenity):
-        """Add an amenity to the place."""
-        self.amenities.append(amenity)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def to_dict(self):
-        return {
-            'id': self.id,
+        base = super().to_dict()
+        base.update({
             'title': self.title,
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+            'owner_id': self.owner_id,
             'description': self.description,
-            'price': self.price,
-            'latitude': self.latitud,
-            'longitude': self.longitud,
-            'owner_id': self.owner_id
-        }
+            'price': getattr(self, 'price', None),
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None,
+            'amenities': [a.to_dict() for a in self.amenities],
+            'reviews': [r.to_dict() for r in self.reviews]
+        })
+        return base
 
     def to_ubication(self):
         return {
-            'latitude': self.latitud,
-            'longitude': self.longitud
+            'latitude': self.latitude,
+            'longitude': self.longitude
         }
