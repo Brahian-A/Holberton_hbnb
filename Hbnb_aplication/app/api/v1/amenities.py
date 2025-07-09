@@ -23,26 +23,16 @@ amenity_update_model = api.model('AmenityUpdate', {
 @api.route('/')
 class AmenityList(Resource):
     @api.expect(amenity_create_model, validate=True)
-    @api.response(201, 'Amenity successfully created')
+    @api.response(201, 'Amenity successfully created or associated')
     @api.response(400, 'Invalid input data')
     def post(self):
         amenity_data = api.payload
-        existing_amenity = facade.get_amenity_by_name(amenity_data['name'].strip())
-        if existing_amenity: # si el amenity ya existe lo devolvemos 
-            return {
-                'message': 'Amenity already exists',
-                'amenity': existing_amenity.to_dict()
-                    }, 200
+        result = facade.create_amenity(amenity_data)
 
-        new_amenity = facade.create_amenity(amenity_data)
-        if 'error' in new_amenity:
-            return new_amenity, 400
-        return new_amenity, 201
+        if isinstance(result, dict) and 'error' in result:
+            return result, 400
 
-    @api.response(200, 'List of amenities retrieved successfully')
-    def get(self):
-        amenities = facade.get_all_amenities()
-        return amenities, 200
+        return result, 201 if result.get('created', False) else 200
 
 @api.route('/<amenity_id>')
 class AmenityResource(Resource):
@@ -64,3 +54,22 @@ class AmenityResource(Resource):
         if updated_amenity:
             return updated_amenity, 200
         return {'error': 'Amenity not found'}, 404
+    
+    @api.route('/')
+    class AmenityList(Resource):
+        @api.expect(amenity_create_model, validate=True)
+        @api.response(201, 'Amenity successfully created or associated')
+        @api.response(400, 'Invalid input data')
+        def post(self):
+            amenity_data = api.payload
+            result = facade.create_amenity(amenity_data)
+
+            if isinstance(result, dict) and 'error' in result:
+                return result, 400
+
+            return result, 201 if result.get('created', False) else 200
+
+        @api.response(200, 'List of amenities retrieved successfully')
+        def get(self):
+            amenities = facade.get_all_amenities()
+            return amenities, 200
