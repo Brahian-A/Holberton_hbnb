@@ -91,6 +91,19 @@ class PlaceResource(Resource):
             return {'error': 'Place not found'}, 404
         return place, 200
 
+    @api.response(200, 'Place details retrieved successfully')
+    @api.response(404, 'Place not found')
+    @api.response(400, 'Invalid input data')
+    def post(self, place_id):
+        place = facade.get_place(place_id)
+        amenity = api.payload
+        if place:
+            retorno = facade.add_amenity_to_place(place_id, amenity)
+            if 'error' in retorno:
+                return retorno, 400
+            return retorno, 200
+        return {"error": "Place not found"}, 404
+
     @api.expect(place_model)
     @api.response(200, 'Place updated successfully')
     @api.response(404, 'Place not found')

@@ -1,8 +1,9 @@
 """
 in this module we init the app package
 """
-from flask import Flask
+from flask import Flask, render_template
 from flask_restx import Api
+from flask_cors import CORS
 from app.extensions import bcrypt, jwt, db
 from flask import render_template
 
@@ -14,7 +15,7 @@ from app.api.v1.auth import api as auth_ns
 from app.api.v1.reservas import api as reservas_ns
 
 def create_app(config_class):
-    app = Flask(__name__)
+    app = Flask(__name__, template_folder='templates', static_folder='static')
     app.config.from_object(config_class)
     app.config['JWT_SECRET_KEY'] = 'mi-clave-supersecreta'
 
@@ -23,8 +24,26 @@ def create_app(config_class):
     bcrypt.init_app(app)
     db.init_app(app)
 
+    CORS(app, resources={r"/api/*": {"origins": "*"}})
+
+    # Ruta pagina principal
+    @app.route('/')
+    def index():
+        "sirve la pagina principal index.html"
+        return render_template('index.html')
+    
+    @app.route('/login')
+    def login():
+        """Sirve la página de inicio de sesión (login.html)."""
+        return render_template('login.html')
+    
+    @app.route('/places')
+    def place_page():
+        """Sirve la página de detalles del lugar (place.html)."""
+        return render_template('place.html')
+
     # API RESTX
-    api = Api(app, version='1.0', title='HBnB API', description='HBnB Application API', doc='/api/v1/')
+    api = Api(app, version='1.0', title='HBnB API', description='HBnB Application API', doc='/docs/')
 
     
     @app.route('/')
