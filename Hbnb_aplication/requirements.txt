@@ -3,5 +3,10 @@ flask-restx
 flask-bcrypt
 flask-jwt-extended
 flask_sqlalchemy
+<<<<<<< HEAD
 cors
 flask_cors
+=======
+Flask-Cors
+
+>>>>>>> 31161ff (actualizacion rma)
