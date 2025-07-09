@@ -11,7 +11,7 @@ import uuid
 
 class User(BaseModel):
     id = db.Column(db.String, primary_key=True, default=lambda: str(uuid.uuid4()),nullable=False)
-    
+
     first_name = db.Column(db.String(100), nullable=False)
     last_name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
