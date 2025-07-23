@@ -4,6 +4,7 @@ be the improvise data base
 """
 from abc import ABC, abstractmethod
 from app.extensions import db
+from sqlalchemy import and_
 
 class Repository(ABC):
     @abstractmethod
@@ -118,3 +119,12 @@ class SQLAlchemyRepository(Repository):
 
     def get_all_by_attribute(self, attr_name, attr_value):
         return self.model_class.query.filter(getattr(self.model_class, attr_name) == attr_value).all()
+    
+    def filter_by_place_and_date_range(self, place_id, check_in, check_out):
+        return self.model_class.query.filter(
+            self.model_class.place_id == place_id,
+            and_(
+                self.model_class.check_in < check_out,
+                self.model_class.check_out > check_in
+            )
+        ).all()

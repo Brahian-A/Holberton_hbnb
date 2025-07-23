@@ -28,9 +28,8 @@ reserva_model = api.model('Reserva', {
 @api.route('/')
 class ReservaList(Resource):
     @api.expect(reserva_create_model, validate=True)
-    @api.response(201, 'Reserva creada correctamente')
+    @api.response(201, 'Reserva creada correctamente', reserva_model)
     @api.response(400, 'Datos inválidos')
-    @api.marshal_with(reserva_model)
     def post(self):
         "created a new reserva"
         data = request.json
