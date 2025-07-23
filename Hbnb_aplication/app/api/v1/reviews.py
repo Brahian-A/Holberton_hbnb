@@ -23,6 +23,7 @@ class ReviewList(Resource):
     @api.response(201, 'Review successfully created / Reseña creada exitosamente')
     @api.response(400, 'Invalid input data / Datos de entrada no válidos')
     def post(self):
+        "Create a new review"
         review_data = api.payload
         try:
             review_data['rating'] = float(str(review_data['rating']).replace(',', '.'))
@@ -33,6 +34,7 @@ class ReviewList(Resource):
 
     @api.response(200, 'List of reviews retrieved successfully / Lista de reseñas recuperada exitosamente')
     def get(self):
+        "Get all reviews"
         reviews = facade.get_all_reviews()
         return reviews, 200
 
@@ -42,6 +44,7 @@ class ReviewResource(Resource):
     @api.response(200, 'Review details retrieved successfully / Detalles de la reseña recuperados exitosamente')
     @api.response(404, 'Review not found / Reseña no encontrada')
     def get(self, review_id):
+        "Get review by ID"
         try:
             review = facade.get_review(review_id)
             return review, 200
@@ -53,6 +56,7 @@ class ReviewResource(Resource):
     @api.response(404, 'Review not found / Reseña no encontrada')
     @api.response(400, 'Invalid input data / Datos de entrada no válidos')
     def put(self, review_id):
+        "Update review"
         review_data = api.payload
         try:
             if 'rating' in review_data:
@@ -65,6 +69,7 @@ class ReviewResource(Resource):
     @api.response(200, 'Review deleted successfully / Reseña eliminada exitosamente')
     @api.response(404, 'Review not found / Reseña no encontrada')
     def delete(self, review_id):
+        "Delete review"
         try:
             facade.delete_review(review_id)
             return {'message': 'Review deleted successfully'}, 200
@@ -77,6 +82,7 @@ class PlaceReviewList(Resource):
     @places_ns.response(200, 'List of reviews for the place retrieved successfully')
     @places_ns.response(404, 'Place not found')
     def get(self, place_id):
+        "Get all reviews for a specific place"
         try:
             reviews = facade.get_reviews_by_place(place_id)
             return reviews, 200

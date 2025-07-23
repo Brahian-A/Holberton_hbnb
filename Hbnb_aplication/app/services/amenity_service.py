@@ -86,6 +86,6 @@ class AmenityService:
     def delete_amenity(self, amenity_id):
         amenity = self.amenity_repo.get(amenity_id)
         if not amenity:
-            return {'error': 'Amenity not found'}
+            return False
         self.amenity_repo.delete(amenity_id)
-        return {'message': 'Amenity deleted successfully'}
+        return True

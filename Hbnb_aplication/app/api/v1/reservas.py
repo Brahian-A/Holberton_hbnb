@@ -32,7 +32,7 @@ class ReservaList(Resource):
     @api.response(400, 'Datos inválidos')
     @api.marshal_with(reserva_model)
     def post(self):
-        """Crear una nueva reserva"""
+        "created a new reserva"
         data = request.json
 
         try:

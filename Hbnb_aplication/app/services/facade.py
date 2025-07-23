@@ -47,6 +47,8 @@ class HBnBFacade:
     def get_amenity_by_name(self, name):
         return self.amenity_service.get_amenity_by_name(name)
 
+    def delete_amenity(self, amenity_id):
+        return self.amenity_service.delete_amenity(amenity_id)
     #🏠 =================== PLACES ===================
     def create_place(self, place_data):
         return self.place_service.create_place(place_data)

@@ -86,6 +86,7 @@ class PlaceResource(Resource):
     @api.response(200, 'Place details retrieved successfully')
     @api.response(404, 'Place not found')
     def get(self, place_id):
+        "get place by ID"
         place = facade.get_place(place_id)
         if not place:
             return {'error': 'Place not found'}, 404
@@ -95,6 +96,7 @@ class PlaceResource(Resource):
     @api.response(404, 'Place not found')
     @api.response(400, 'Invalid input data')
     def post(self, place_id):
+        "add amenity to place"
         place = facade.get_place(place_id)
         amenity = api.payload
         if place:
@@ -137,6 +139,7 @@ class PlaceResource(Resource):
     @api.response(200, 'Place deleted successfully')
     @api.response(404, 'Place not found')
     def delete(self, place_id):
+        "deleted a place"
         result = facade.delete_place(place_id)
         if 'error' in result:
             return result, 404
