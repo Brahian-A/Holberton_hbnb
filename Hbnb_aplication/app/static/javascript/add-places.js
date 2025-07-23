@@ -6,6 +6,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let listOfAllAmenities = [];
 
     ventanaEmergente.style.display = 'none';
+
+    /*             -#-#-#-#- LOGICA DE AUTENTICACION -#-#-#-#-
+    ----------------------------------------------------------------------------------- */
     async function checkAuthentication() {
         if (accessToken) {
             if (loginLink) {
@@ -30,7 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
     }
 
-    /* -#-#-#-#- funcion para crear Places -#-#-#-#- */
+    /*         -#-#-#-#- FUNCION PARA CREAR PLACES -#-#-#-#- 
+    ----------------------------------------------------------------------*/
     async function addPlaces() {
         const formAddPlaces = document.getElementById('formAddPlace');
         const formData = new FormData(formAddPlaces);
@@ -75,15 +79,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
+            const data = await response.json();
+            const place_id = `${data.id}`; // capturamos el id del nuevo Place
             ventanaEmergente.style.display = 'flex'; // aparece la ventana emergente
-            await addPlaceAmenities(accessToken); // llamamos a la funcion para asociar amenities
+            await addPlaceAmenities(accessToken, place_id);
+            asociateAmenityToPlace(accessToken, place_id) // llamamos a la funcion para asociar amenities
         } catch (error) {
             console.error('Error f:', error);
         }
     }
 
-    /* -#-#-#-#- funcion para añadir las amenities al Place -#-#-#-#- */
-    async function addPlaceAmenities(accessToken) {
+    /* -#-#-#-#- FUNCION PARA AÑADIR LAS AMENITIES AL PLACE -#-#-#-#- 
+    ------------------------------------------------------------------*/
+    async function addPlaceAmenities(accessToken, place_id) {
         const amenityList = document.getElementById('amenityList');
         const amenityItems = document.getElementById('amenityItems');
         const urlAmenities = 'http://127.0.0.1:5000/api/v1/amenities/';
@@ -116,81 +124,116 @@ document.addEventListener('DOMContentLoaded', () => {
                 li.innerHTML = `
                         <p>
                             <span>${amenity.name}</span>
-                            <input type="checkbox" name="amenitisCreadas" id="${amenity.id}">
+                            <input type="checkbox" name="amenitisCreadas" id="${amenity.name}">
                         </p>
                 `;
-                amenityList.appendChild(li);
+                amenityList.appendChild(li); // las agregamos al sector donde se deben mostrar
             });
         } catch (error) {
+            console.error('Error al obtener amenities:', error);
         }
     }
 
-    const botonCrearAmenity = document.getElementById('botonCrearAmenity');  // logica para cuando tocan el boton de crear amenity
-    botonCrearAmenity.addEventListener('click', async () => {
-        const accessToken = localStorage.getItem('access_token');
-        const url = 'http://127.0.0.1:5000/api/v1/amenities/';
-        const place_id = '34d25bbb-2ca4-41df-ae9e-16ef836bee0f';
-        const nombreNewAmenity = document.getElementById('nombreNewAmenity');
-        const nombreAmenityInput = nombreNewAmenity.value.trim().toLowerCase();
-        if (!nombreNewAmenity) {  // verificamos si el campo estaba vacio
-            alert('Las amenities llevan nombre');  
-            ventanaEmergente.style.display = 'none';
-            addPlaceAmenities(accessToken);
-        }
-        if (listOfAllAmenities.includes(nombreAmenityInput)) { // verificamos si ya existia
-            alert('Amenity existente');
-            nombreNewAmenity.value = '';
-            return;
-        }
-        const datosAmenity = { // si llego hasta aca es por que hay que crearla
-            name: nombreNewAmenity.value,
-            place_id: place_id
-        };
-        const requestOptPost = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${accessToken}`
-            },
-            body: JSON.stringify(datosAmenity)
-        } // preparamos todo para la peticion
-        const response = await fetch(url, requestOptPost);
-        if (!response.ok) {
-            alert('Las amenities llevan nombre');
-            ventanaEmergente.style.display = 'none';
-            addPlaceAmenities(accessToken);
-        } else {
-            alert('amenity creada con exito');
-            nombreNewAmenity.value = '';
-            addPlaceAmenities(accessToken);
-        }
-    })
-
-    const botonTest = document.getElementById('testAmenities');
-    if (botonTest) {
-        botonTest.addEventListener('click', async () => {
-            ventanaEmergente.style.display = 'flex';
-            const accessTokenTest = localStorage.getItem('access_token');
-            if (accessTokenTest) {
-                await addPlaceAmenities(accessTokenTest)
+    async function asociateAmenityToPlace(accessToken, place_id) {
+        /*    -#-#-#-#- EVENTO PARA CREAR NUEVOS AMENITIES -#-#-#-#- 
+        ----------------------------------------------------------------*/
+        const botonCrearAmenity = document.getElementById('botonCrearAmenity');  // logica para cuando tocan el boton de crear amenity
+        botonCrearAmenity.addEventListener('click', async () => {
+            const url = 'http://127.0.0.1:5000/api/v1/amenities/';
+            const nombreNewAmenity = document.getElementById('nombreNewAmenity');
+            const nombreAmenityInput = nombreNewAmenity.value.trim().toLowerCase();
+            if (!nombreNewAmenity) {  // verificamos si el campo estaba vacio
+                alert('Las amenities llevan nombre');
+                addPlaceAmenities(accessToken, place_id);
+                return
             }
-
+            if (listOfAllAmenities.includes(nombreAmenityInput)) { // verificamos si ya existia
+                alert('Amenity existente');
+                nombreNewAmenity.value = '';
+                return;
+            }
+            const datosAmenity = { // si llego hasta aca es por que hay que crearla
+                name: nombreNewAmenity.value,
+                place_id: place_id
+            };
+            const requestOptPost = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
+                },
+                body: JSON.stringify(datosAmenity)
+            } // preparamos todo para la peticion
+            const response = await fetch(url, requestOptPost);
+            if (!response.ok) {
+                alert('Las amenities llevan nombre');
+                ventanaEmergente.style.display = 'none';
+                addPlaceAmenities(accessToken, place_id);
+            } else {
+                alert('amenity creada con exito');
+                nombreNewAmenity.value = '';
+                addPlaceAmenities(accessToken, place_id);
+            }
         })
+
+        /*  -#-#-#-#- LOGICA PARA ASOCIAR LAS AMENITIES AL PLACE -#-#-#-#-
+        ---------------------------------------------------------------------- */
+        const addAmenitiesToPlace = document.getElementById('addAmenitiesToPlace');
+        if (addAmenitiesToPlace) {
+            addAmenitiesToPlace.addEventListener('click', async () => {
+                let amenitiesSelected = [];
+                let arrayPromesas = [];
+                const url = 'http://127.0.0.1:5000/api/v1/amenities/';
+                const listCheckbox = document.querySelectorAll('[name="amenitisCreadas"]');
+                listCheckbox.forEach(checkbox => {
+                    if (checkbox.checked === true) {
+                        amenitiesSelected.push(checkbox.id)
+                    }
+                });
+                amenitiesSelected.forEach(amenityName => {
+                    const sendDataAmenity = {
+                        'name': amenityName,
+                        'place_id': place_id 
+                    }
+                    const requestOptPost = {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${accessToken}`
+                        },
+                        body: JSON.stringify(sendDataAmenity)
+                    }
+                    const promise = fetch(url, requestOptPost)
+                        .then(response => {
+                            if (!response.ok) {
+                                return response.json().then(errorData => {
+                                throw new Error(`Error al asociar "${amenityName}": ${response.status} - ${errorData.message || response.statusText}`)
+                                })
+                            }
+                            return response.json();
+                    })
+                    .catch(error => {
+                        console.error('Error: ', error)
+                        alert('Error en el servidor')
+                        return `${response.status}`;
+                    });
+                    arrayPromesas.push(promise);
+                });
+                try {
+                    const response = await Promise.all(arrayPromesas);
+                    if (response.ok) {
+                        alert('place creado exitosamente');
+                        window.reload.location('/')
+                    }
+                } catch {
+
+                }
+
+            });
+        }        
     }
 
-    // futura logica para asociar las amenities con el place
-    const addAmenitiesToPlace = document.getElementById('addAmenitiesToPlace');
-    if (addAmenitiesToPlace) {
-        addAmenitiesToPlace.addEventListener('click', async () => {
-            let amenitiesSelected = [];
-            const listCheckbox = document.querySelectorAll('[name="amenitisCreadas"]');
-            listCheckbox.forEach(checkbox => {
-                if (checkbox.checked === true) {
-                    amenitiesSelected.push(`${checkbox.id}`)
-                }
-            });
-        });
-    }
+    
 
     // logica para enviar el formulario de Places cuando tocan el boton crear
     const formAddPlace = document.getElementById('formAddPlace');
