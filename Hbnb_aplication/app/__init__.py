@@ -45,12 +45,6 @@ def create_app(config_class):
     # API RESTX
     api = Api(app, version='1.0', title='HBnB API', description='HBnB Application API', doc='/docs/')
 
-    
-    @app.route('/')
-    def index():
-        print("Ruta '/' llamada")
-        return render_template('index.html')
-    
     # Rutas
     api.add_namespace(users_ns, path='/api/v1/users')
     api.add_namespace(places_ns, path='/api/v1/places')
