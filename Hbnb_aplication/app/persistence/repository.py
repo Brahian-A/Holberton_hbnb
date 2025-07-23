@@ -98,13 +98,15 @@ class SQLAlchemyRepository(Repository):
 
     def delete(self, obj_id):
         obj = self.get(obj_id)
-        if obj:
-            try:
-                db.session.delete(obj)
-                db.session.commit()
-            except Exception as e:
-                db.session.rollback()
-                raise e
+        if not obj:
+            return False  
+        try:
+            db.session.delete(obj)
+            db.session.commit()
+            return True
+        except Exception as e:
+            db.session.rollback()
+            raise e
 
     def get_by_attribute(self, attr_name, attr_value):
         return self.model_class.query.filter(
@@ -113,3 +115,6 @@ class SQLAlchemyRepository(Repository):
 
     def get_reviews_by_place(self, place_id):
         return self.model_class.query.filter_by(place_id=place_id).all()
+
+    def get_all_by_attribute(self, attr_name, attr_value):
+        return self.model_class.query.filter(getattr(self.model_class, attr_name) == attr_value).all()

@@ -113,28 +113,33 @@ class PlaceResource(Resource):
         """Update a place's information"""
         update_data = api.payload
 
-        # Buscar el lugar por ID
-        place = facade.place_repo.get(place_id)
+        place = facade.get_place(place_id)
         if place is None:
             return {'error': 'Place not found'}, 404
 
-        # No permitir modificar latitud ni longitud
-        if 'latitude' in update_data and update_data['latitude'] != place.latitude:
+        if 'latitude' in update_data and update_data['latitude'] != place.get('latitude'):
             return {'error': "Location (latitude) cannot be modified"}, 400
-        if 'longitude' in update_data and update_data['longitude'] != place.longitude:
+        if 'longitude' in update_data and update_data['longitude'] != place.get('longitude'):
             return {'error': "Location (longitude) cannot be modified"}, 400
 
-        # Validar que el nuevo owner_id exista si se quiere cambiar
-        if 'owner_id' in update_data and update_data['owner_id'] != place.owner_id:
+        if 'owner_id' in update_data and update_data['owner_id'] != place.get('owner_id'):
             if not facade.get_user(update_data['owner_id']):
                 return {'error': "New owner_id does not exist"}, 400
 
-        # Hacer la actualización
         updated_place = facade.update_place(place_id, update_data)
 
         if updated_place:
             return updated_place if isinstance(updated_place, dict) else updated_place.to_dict(), 200
 
         return {'error': 'Internal server error'}, 500
+
+
+    @api.response(200, 'Place deleted successfully')
+    @api.response(404, 'Place not found')
+    def delete(self, place_id):
+        result = facade.delete_place(place_id)
+        if 'error' in result:
+            return result, 404
+        return result, 200
 
     
