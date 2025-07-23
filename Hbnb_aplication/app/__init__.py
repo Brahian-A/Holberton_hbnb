@@ -42,14 +42,19 @@ def create_app(config_class):
         """Sirve la página de detalles del lugar (place.html)."""
         return render_template('place.html')
 
+    @app.route('/profile')
+    def profile():
+        """Sirve la página del perfil personal (profile.html)."""
+        return render_template('profile.html')
+
+    @app.route('/addPlace')
+    def addPlaces():
+        """Sirve la página para añadir places (add.places.html)."""
+        return render_template('add-places.html')
+
     # API RESTX
     api = Api(app, version='1.0', title='HBnB API', description='HBnB Application API', doc='/docs/')
 
-    
-    @app.route('/')
-    def index():
-        print("Ruta '/' llamada")
-        return render_template('index.html')
     
     # Rutas
     api.add_namespace(users_ns, path='/api/v1/users')

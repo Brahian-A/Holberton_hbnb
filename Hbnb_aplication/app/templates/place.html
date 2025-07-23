@@ -8,13 +8,7 @@
     <link rel="stylesheet" href="../static/css/style-places.css">
 </head>
 <body>
-    <header class="header">
-        <nav class="nav">
-            <a href="/"><img class="logo" src="../static/images/logo.png" alt="logo of the website"></a>
-            <a class="login-button" href="/login" id="login-link">Log in</a>
-            <button id="logout-link" style="display: none;">log out</button>
-        </nav>
-    </header>
+    {% include "header.html" %}
     <main>
         <section id="place-details">
             <!-- Place details will be populated dynamically -->
@@ -68,9 +62,7 @@
             </form>
         </section>
     </main>
-    <footer>
-        <h3 class="text-footer">©2024 HBnB Evolution. all rights reserved.</h3>
-    </footer>
+    {% include "footer.html" %}
     <script src="../static/javascript/scripts-places.js"></script>
 </body>
 </html>

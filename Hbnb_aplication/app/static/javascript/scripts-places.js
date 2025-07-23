@@ -119,11 +119,13 @@ document.addEventListener('DOMContentLoaded', () => {
         placesDetails.appendChild(titleElement);
         detailShow.innerHTML = ''; // Limpiamos el contenido previo
 
+        const amenitiesList = place.amenities && place.amenities.length > 0 ? place.amenities.map(amenity => amenity.name).join(', ') : 'No amenities listed';
+
         detailShow.innerHTML += `
             <p class="place-owner"><b>Host: </b>${place.owner_id.first_name} ${place.owner_id.last_name}</h5>
             <p class="place-price"><b>Price per night: </b>$${place.price}</p>
             <p class="place-description"><b>Description: </b>${place.description}</p>
-            <p class="amenities"><b>Amenities: </b>${place.amenities.join(', ')}</p>
+            <p class="amenities"><b>Amenities: </b>${amenitiesList}</p>
         `;
 
         /*##################################################
@@ -164,14 +166,14 @@ document.addEventListener('DOMContentLoaded', () => {
             return
         }
         function autoResizeReviewTextArea() {
-            if (reviewText) { // Asegúrate de que reviewText existe
+            if (reviewText) { // verificamos que reviewText existe
                 reviewText.style.height = '25px';
                 reviewText.style.height = reviewText.scrollHeight + 'px';
             }
         }
 
         // Asignar el event listener y llamar la primera vez
-        if (reviewText) { // Asegúrate de que reviewText existe antes de añadir listeners
+        if (reviewText) { // verificamos que reviewText existe antes de añadir listeners
             reviewText.addEventListener('input', autoResizeReviewTextArea);
             autoResizeReviewTextArea(); // Para ajustar si ya hay contenido al cargar
         }

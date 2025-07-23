@@ -17,7 +17,7 @@ body{
 /*##############################
 ---------  HEADER  -------------
 ################################*/
-.header {
+.header-of-index {
     background-color: #00fa;
     padding: 10px;
     text-align: center;
@@ -27,7 +27,7 @@ body{
     width: 100%;
     max-height: 80px;
 }
-.nav{
+.nav-of-index{
     display: flex;
     flex-direction: row;
     width: 100%;

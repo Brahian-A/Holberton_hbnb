@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log('registro exitoso:', data);
                 alert('¡Registro exitoso! Ahora puedes iniciar sesión.');
                 // se redirige al usuario al index.html
-                window.location.href = '/';
+                window.location.href = '/login';
             }
             else {
                 console.error('Error en el registro:', data.error);
