@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 logoutButton.onclick = () => {  // detecta cierre de sesión
                     localStorage.removeItem('access_token');
                     localStorage.removeItem('user_id'); // elimina el token de acceso y el id del almacenamiento local
-                    window.location.reload(); // redirige al usuario a la página principal
+                    window.location.href = '/login'; // redirige al usuario a la página principal
                 };
             }
         } else {
@@ -215,20 +215,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     .catch(error => {
                         console.error('Error: ', error)
                         alert('Error en el servidor')
-                        return `${response.status}`;
+                        throw error;
                     });
                     arrayPromesas.push(promise);
                 });
                 try {
-                    const response = await Promise.all(arrayPromesas);
-                    if (response.ok) {
-                        alert('place creado exitosamente');
-                        window.reload.location('/')
-                    }
-                } catch {
-
+                    await Promise.all(arrayPromesas);
+                    alert('place creado exitosamente');
+                    window.location.href = '/';
+                } catch (error) {
+                    console.error('Error en una o varias solicitudes:', error);
+                    alert(`Hubo un error al asociar una o más amenities. Revisa la consola para más detalles.\n${error.message}`);
                 }
-
             });
         }        
     }

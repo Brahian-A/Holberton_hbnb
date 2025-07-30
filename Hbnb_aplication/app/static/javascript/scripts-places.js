@@ -7,12 +7,12 @@ function getStarRatingHtml(rating, maxStars = 5) {
 
     // Estrellas llenas
     for (let i = 0; i < roundedRating; i++) {
-        starsHtml += '<span class="star filled">★</span>'; // O un ícono de Font Awesome/imagen
+        starsHtml += '<span class="star filled">★</span>';
     }
 
     // Estrellas vacías
     for (let i = roundedRating; i < maxStars; i++) {
-        starsHtml += '<span class="star empty">☆</span>'; // O un ícono de Font Awesome/imagen
+        starsHtml += '<span class="star empty">☆</span>';
     }
     return starsHtml;
 }
@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 logoutButton.onclick = () => {  // detecta cierre de sesión
                     localStorage.removeItem('access_token');
                     localStorage.removeItem('user_id'); // elimina el token de acceso y el id del almacenamiento local
-                    window.location.reload(); // redirige al usuario a la página principal
+                    window.location.href = '/login'; // redirige al usuario a la página principal
                 };
             }
             // si esta autenticado
@@ -154,6 +154,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
                 reviewsSection.appendChild(div);
             });
+        } else {
+            reviewsSection.innerText = 'Aun no contiene reviews';
         }
     }
     async function addReviews() {
@@ -229,8 +231,67 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+    const botonHacerReserva = document.getElementById('hacerReserva');
+    const closeVentanaEmergente = document.getElementById('closeVentanaEmergente');
+    const ventanaEmergente = document.getElementById('ventanaEmergente');
+    ventanaEmergente.style.display = 'none';
+    botonHacerReserva.addEventListener('click', () => {
+            ventanaEmergente.style.display = 'flex'
+    });
+    closeVentanaEmergente.addEventListener('click', () => {
+            ventanaEmergente.style.display = 'none'
+    });
+    const userId = localStorage.getItem('user_id');
+    const formReserva = document.getElementById('formReserva');
+
+    formReserva.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const formData = new FormData(formReserva);
+        const datosDelForm = Object.fromEntries(formData.entries());
+        const datosParaEnviar = {};
+        for (const key in datosDelForm) { // creamos un for para recorrer los valores entregados
+            const value = datosDelForm[key];
+            datosParaEnviar[key] = value;
+        }
+        datosParaEnviar['user_id'] = userId;
+        datosParaEnviar['place_id'] = placeId;
+
+        if (!accessToken) {
+            console.error('No se encontró el token de acceso.');
+            checkAuthentication(); // Forzar una re-verificación de autenticación
+            return null;
+        }
+
+        const url = 'http://127.0.0.1:5000/api/v1/reservas/';
+        const requestOptionsPost = { // preparamos la peticion
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            },
+            body: JSON.stringify(datosParaEnviar)
+        };
+        try {
+            const response = await fetch(url, requestOptionsPost);
+            if (!response.ok) { // manejamos la no autorizacion del cliente
+                if (response.status === 401) {
+                    console.error('Unauthorized access - invalid token');
+                    localStorage.removeItem('access_token'); // eliminamos el token de acceso
+                    localStorage.removeItem('user_id'); // eliminamos el id del usuario
+                    checkAuthentication(); // volvemos a verificar la autenticación
+                    return null;
+                }
+                const data = await response.json();
+                alert(`Error: ${data.error}`);
+                return;
+            }
+            alert('reserva exitosa');
+            ventanaEmergente.style.display = 'none';
+        } catch (error) {
+            console.error('Error f:', error);
+        }
+    })
     // llamada principal para que todo ande
     checkAuthentication();
     addReviews();
-
 });
